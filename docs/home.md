@@ -1,21 +1,24 @@
 # Aurora
-
+[![Stars](https://img.shields.io/github/stars/aurora-go/aurora)](https://github.com/aurora-go/aurora)
+[![Go Version](https://img.shields.io/badge/v0.4.7-releases-blue)](https://github.com/aurora-go/aurora/releases/tag/v0.4.7)
+[![Go Package](https://img.shields.io/badge/Doc-pkg-brightgreen)](https://pkg.go.dev/github.com/aurora-go/aurora)
+[![Go Version](https://img.shields.io/badge/go1.18-version-orange)](https://golang.google.cn/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aurora-go/aurora)](https://goreportcard.com/report/github.com/aurora-go/aurora)
+[![License](https://img.shields.io/github/license/aurora-go/aurora)](https://github.com/aurora-go/aurora/blob/future/LICENSE)
 ## 简介
+&emsp;&emsp;Aurora Web Framework 将是 Golang 自诞生以来最好用的 Web 开发生产工具。路由处理灵活，集中式依赖管理，让项目代码结构更加优雅，专注于业务编码。
 
-### 版本
-
-```go
-func TestString(t *testing.T) {
-	a := NewAurora()
-	a.Get("/", func() string {
-		return ""
-	})
-	a.Get("/user/{id}", func(id interface{}) interface{} {
-		return id
-	})
-	a.Post("/user", func() string {
-		return ""
-	})
-	Run(a)
-}
-```
+## 主要内容
+- [X]  基础路由
+- [X]  RESTFul
+- [X]  请求参数注入
+- [X]  文件上传
+- [X]  分组路由
+- [X]  支持中间件
+- [X]  静态资源
+- [X]  内置JSON
+- [x]  全站开发
+- [X]  错误捕捉
+- [X]  服务转发
+- [X]  可插拔组件
+- [X]  组件依赖管理
