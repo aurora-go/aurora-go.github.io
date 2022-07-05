@@ -109,8 +109,49 @@ a.Post("/post3", func(post map[string]interface{}) {
 
 需要遵循一下几点
 
-- 注册的结构体需要指针类型
-- 使用HTTP方法类型作为前缀
-- 路由解析采用驼峰方式切割分段
-- 必要情况可以采用下划线 `_` 强制分割
-- 接口的路径将全部默认为小写
+> - 注册的结构体需要指针类型
+> - 使用HTTP方法类型作为前缀
+> - 路由解析采用驼峰方式切割分段
+> - 必要情况可以采用下划线 `_` 强制分割
+> - 接口的路径将全部默认为小写
+
+### 例
+使用专属注册器注册
+```go
+type TestServer struct {
+
+}
+
+func (s *TestServer) GetName() {
+	
+}
+
+func (s *TestServer) GetUpdate() {
+	
+}
+
+func main(){
+    a := aurora.NewAurora()
+	a.Url("/", &TestServer{})
+	aurora.Run(a)
+}
+```
+上述例子 使用 `a.Url("/", &TestServer{})` 方法注册结构体，会按照规则解析绑定的函数，`GetName()` 将解析为接口 `/name` ，`GetUpdate()` 将解析为接口 `/update` ，
+其类型都是Get请求，需要转换为其他类型的请求修改开头的驼峰前缀即可比如， `PostUpdate()` 。
+
+## 使用中间件
+中间件是一个固定的函数签名，日后也许会有所调整
+```go
+type Middleware func(Ctx) bool
+```
+### 全局中间件
+直接调用 `Use` 方法即可
+```go
+
+```
+### 局部中间件
+
+### 结构体中间件
+
+
+## 自定义日志替换
