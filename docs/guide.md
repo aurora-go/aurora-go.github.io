@@ -147,12 +147,39 @@ type Middleware func(Ctx) bool
 ### 全局中间件
 直接调用 `Use` 方法即可
 ```go
-a.Use()
+package main
+
+import (
+	"fmt"
+	"github.com/aurora-go/aurora"
+)
+
+func Before() aurora.Middleware {
+	return func(ctx aurora.Ctx) bool {
+		fmt.Println("before")
+		return true
+	}
+}
+
+func main() {
+	a := aurora.NewAurora()
+	a.Use(Before())
+	a.Get("/", func()  {
+		
+	})
+	aurora.Run(a)
+}
 ```
 ### 局部中间件
-
+在注册函数的最后一个参数是一个可变参数，能给一个接口配置多个中间件
+```go
+a.Get("/", func() {}, Before())
+```
 ### 结构体中间件
-
+结构体中间件，是作用在当前结构体的所有函数上面，不支持指定到具体某个函数上，如果需要特殊处理，还是选择函数模式。
+```go
+a.Url("/", &TestServer{}, Before())
+```
 
 ## 自定义日志替换
 
