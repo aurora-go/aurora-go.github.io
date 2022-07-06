@@ -1,7 +1,7 @@
 # Aurora Web
 
 ## 简介
-&emsp;&emsp;Aurora Web Framework 将是 Golang 自诞生以来最好用的 Web 开发生产工具。路由处理灵活，集中式依赖管理，让项目代码结构更加优雅，专注于业务编码。
+&emsp;&emsp;Aurora Web Framework 将是 Golang 自诞生以来最好用的 Web 开发生产工具。路由处理灵活，集中式依赖管理，让项目代码结构更加优雅，专注于业务编码，交流群:836414068。
 
 ## 主要内容
 - [X]  基础路由
