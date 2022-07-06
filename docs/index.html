@@ -22,7 +22,10 @@
       subMaxLevel: 4,
       homepage: 'home.md',
       relativePath: true,
-      search: 'auto', // default
+      search : [
+        '/home',            // => /README.md
+        '/guide',         // => /guide.md
+      ],
       mergeNavbar: true,
       coverpage: true,
       pagination: {
