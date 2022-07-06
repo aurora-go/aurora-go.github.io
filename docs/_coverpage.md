@@ -1,10 +1,11 @@
 
-> A magical documentation site generator.
+# Aurora<small>v0.4.8</small>
 
-- Simple and lightweight
-- No statically built html files
-- Multiple themes
+- 简单-优雅-灵活
+- 动态路由
+- 全栈开发
 
+[开始](home.md)
 [GitHub](https://github.com/aurora-go/aurora)
-[Get Started](home.md)
+
 ![](#f0f0f0)
