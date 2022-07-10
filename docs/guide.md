@@ -241,10 +241,10 @@ func main() {
 ## 依赖管理
 依赖管理功能是 为了解决 `aurora` 运行中组件与组件之间存在的依赖关系。
 ### 组件
-什么是组件? 在 `aurora` 中组件就是一个结构体变量，组件有唯一的id对应一个变量。组件主要分为2类，匿名组件，实名组件，前者并非没有名称，只是来源于注册方式不同采用的是结构体的全名来作为id。
+什么是组件? 在 `aurora` 中组件就是一个结构体变量，组件有唯一的id对应一个变量。组件主要分为2类，匿名组件，命名组件，前者并非没有名称，只是来源于注册方式不同采用的是结构体的全名来作为id。
 ### 加载组件
 加载组件，就是把初始化好的变量，注册到 `aurora` 的内部容器中，在服务器启动期间，会初始化容器完成指定的依赖赋值
-#### 方式一 : 实名注册
+#### 方式一 : 命名注册
 ```go
 type Component map[string]interface{}
 
@@ -262,9 +262,67 @@ func main() {
 //通过 Use 方法直接 指针类型的结构体
 func main() {
 	a := aurora.NewAurora()
-	//注册了一个 id 为 xxx 的组件
+	//注册了一个 id 为 Xxx 的组件
 	a.Use(new(Xxx))
 	aurora.Run(a)
 }
 ```
+
 ### 使用组件
+把组件注册到 `aurora` 的容器中，通过 golang `tag` 属性 `ref:""` 来对容器中的依赖进行使用
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/aurora-go/aurora"
+)
+
+type Aaa struct {
+	Name  string
+	DataB *Bbb `ref:"b"`
+}
+
+type Bbb struct {
+	Name  string
+	DataA *Aaa `ref:"a"`
+}
+
+type Ccc struct {
+	Name string
+}
+
+func main() {
+	a := aurora.NewAurora()
+	// 通过命名方式注册了 3个组件
+	a.Use(aurora.Component{
+		"a": &Aaa{Name: "Aaa"},
+		"b": &Bbb{Name: "Bbb"},
+		"c": &Ccc{Name: "Caa"},
+	})
+	a.Url("/", &TestServerA{})
+	a.Url("/", &TestServerB{})
+	aurora.Run(a)
+}
+
+type TestServerA struct {
+	TestA *Aaa `ref:"a"`
+}
+
+type TestServerB struct {
+	TestA *Aaa `ref:"a"`
+}
+
+// GetName 获取 组件id为a的Name属性
+func (s *TestServerB) GetName() string {
+	return s.TestA.Name
+}
+
+// GetUpdate 修改组件id为 a的Name属性
+func (s *TestServerA) GetUpdate() {
+	s.TestA.Name = "Bbb"
+}
+```
+示例中注册了3个命名组件分别是 a,b,c 。 a组件中的 `DataB` 属性通过 `ref:"b"` 引用了b组件，b组件的 `DataA` 也是一样的效果引用了b组件。
+`TestServerA` 和 `TestServerB` 分别作为处理器注册，通过接口对公共组件 a 进行了修改，启动服务器后先访问接口 `/name` 可以查看修改前 a组件Name属性 然后访问 `/update` 对a组件的Name进行修改
+，最后 再次访问 `/name` 会得到修改后的结果。
