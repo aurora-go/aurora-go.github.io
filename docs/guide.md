@@ -182,15 +182,89 @@ a.Url("/", &TestServer{}, Before())
 ```
 
 ## 自定义日志替换
-
+`aurora.Log`日志接口
+```go
+type Log interface {
+	Info(...interface{})
+	Error(...interface{})
+	Debug(...interface{})
+	Panic(...interface{})
+	Warn(...interface{})
+}
+```
+使用自定义的 `logrus` 
+```go
+func main() {
+	a := aurora.NewAurora()
+	a.Use(logrus.New())
+	aurora.Run(a)
+}
+```
 ## 配置文件
-
+`aurora` 的配置处理采用的 `viper` 实现，仅支持 yml 格式的读取， 自带的 `ConfigCenter` 配置中心实现对 `viper` 的分装，提供了并发读写安全的操作。
 ### 默认配置文件
-
+`aurora` 会加载项目跟目录下的`application.yml`配置文件，存在多个同名的配置文件加载顺序会优先查找最外层的配置。
 ### 读取配置文件
+通过 `func (*Aurora) GetConfig() Config` 提供对配置的访问
 ### 自定义配置文件
+实现 `aurora.Config` 接口，该接口是对 `viper` 中的一个抽取，以便用户自定义对 `viper` 中的功能进行扩展。
+```go
+type Config interface {
+	SetConfigFile(string)
+	SetConfigType(string)
+	ReadConfig(io.Reader) error
+	Set(string, interface{})
+	SetDefault(string, interface{})
+	GetStringMapString(string) map[string]string
+	Get(string) interface{}
+	GetStringSlice(string) []string
+	GetStringMap(string) map[string]interface{}
+	GetString(string) string
+	GetStringMapStringSlice(string) map[string][]string
+}
+```
+使用自定义 `viper` 替换默认的配置
+```go
+func main() {
+	a := aurora.NewAurora()
+	cnf := viper.New()
+	cnf.SetConfigFile("X:\\xx\\xx\\xx\\xx\\xx.yml")
+	err := cnf.ReadInConfig()
+	if err != nil {
+		a.Panic(err)
+	}
+	a.Use(cnf)
+	aurora.Run(a)
+}
+```
 
 ## 依赖管理
+依赖管理功能是 为了解决 `aurora` 运行中组件与组件之间存在的依赖关系。
 ### 组件
+什么是组件? 在 `aurora` 中组件就是一个结构体变量，组件有唯一的id对应一个变量。组件主要分为2类，匿名组件，实名组件，前者并非没有名称，只是来源于注册方式不同采用的是结构体的全名来作为id。
 ### 加载组件
+加载组件，就是把初始化好的变量，注册到 `aurora` 的内部容器中，在服务器启动期间，会初始化容器完成指定的依赖赋值
+#### 方式一 : 实名注册
+```go
+type Component map[string]interface{}
+
+//通过 Use 方法注册 Component 
+func main() {
+	a := aurora.NewAurora()
+	//注册了一个 id 为 xxx 的组件
+	a.Use(aurora.Component{"aaa":&{}})
+	aurora.Run(a)
+}
+
+```
+#### 方式二 : 匿名注册
+```go
+//通过 Use 方法直接 指针类型的结构体
+func main() {
+	a := aurora.NewAurora()
+	//注册了一个 id 为 xxx 的组件
+	a.Use(new(Xxx))
+	aurora.Run(a)
+}
+```
 ### 使用组件
