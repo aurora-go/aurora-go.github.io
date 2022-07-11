@@ -326,3 +326,47 @@ func (s *TestServerA) GetUpdate() {
 示例中注册了3个命名组件分别是 a,b,c 。 a组件中的 `DataB` 属性通过 `ref:"b"` 引用了b组件，b组件的 `DataA` 也是一样的效果引用了b组件。
 `TestServerA` 和 `TestServerB` 分别作为处理器注册，通过接口对公共组件 a 进行了修改，启动服务器后先访问接口 `/name` 可以查看修改前 a组件Name属性 然后访问 `/update` 对a组件的Name进行修改
 ，最后 再次访问 `/name` 会得到修改后的结果。
+
+> 现阶段的 `aurora` 容器在组件中想要引用其他组件只能通过 ref tag来达到目的，这是为了确保初始化更安全，在控制器被初始化阶段可以支持类型匹配的方式去自动加载相关依赖。
+
+使用匿名注册组件，来自动初始化结构体控制器中的对应字段属性,能够达到和上面 ref tag 相同的效果(仅限处理器初始化阶段)
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/aurora-go/aurora"
+)
+
+type Aaa struct {
+	Name string
+}
+
+func main() {
+	a := aurora.NewAurora()
+	// 通过命名方式注册了 3个组件
+	a.Use(&Aaa{Name: "Aaa"})
+	a.Url("/", &TestServerA{})
+	a.Url("/", &TestServerB{})
+	aurora.Run(a)
+}
+
+type TestServerA struct {
+	TestA *Aaa
+}
+
+type TestServerB struct {
+	TestA *Aaa
+}
+
+// GetName 获取 组件id为a的Name属性
+func (s *TestServerB) GetName() string {
+	return s.TestA.Name
+}
+
+// GetUpdate 修改组件id为 a的Name属性
+func (s *TestServerA) GetUpdate() {
+	fmt.Println(s.TestA.Name)
+	s.TestA.Name = "Bbb"
+}
+```
