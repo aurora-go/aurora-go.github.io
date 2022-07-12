@@ -373,3 +373,36 @@ func (s *TestServerA) GetUpdate() {
 	s.TestA.Name = "Bbb"
 }
 ```
+
+## 错误捕捉器
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/aurora-go/aurora"
+)
+
+type MyError struct {
+	E string
+}
+
+func (receiver *MyError) Error() string {
+	return receiver.E
+}
+
+func main() {
+	a := aurora.NewAurora()
+	a.Catch(func(err *MyError) string {
+		fmt.Println("捕捉err")
+		return err.Error()
+	})
+	group := a.Group("/test")
+	group.Get("/", func() error {
+		return &MyError{"errors"}
+	})
+	aurora.Run(a)
+}
+```
+
+> 错误捕捉只适用于自定义的错误类型，否则返回错误将只作为简单的内容输出，错误处理器的返回值处理方式和接口处理器处理一致
