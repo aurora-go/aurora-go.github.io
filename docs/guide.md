@@ -194,7 +194,13 @@ func (g *Group) Group(url string, middleware ...Middleware) *Group
 `Group` 的 `Use()` 方法仅仅用于当前分组的全局中间件
 
 ## 静态资源
+`aurora` 默认静态资源解析目录是项目根目录，推荐单独创建一个静态资源目录存放 html , js ,css 等静态资源，在 `aurora` 项目中所有的html中引入的静态资源都必须以根路径为基础。
 
+```ymal
+aurora:
+    resource: static
+```
+配置文件中设置 `aurora.resource` 的值是项目艮路径下面的一个目录 static ，此刻 static 目录为 所有静态资源的根路径。
 
 ## 自定义日志替换
 `aurora.Log`日志接口
