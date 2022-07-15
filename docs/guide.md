@@ -25,10 +25,21 @@ func main() {
 ```
 [访问 localhost:8080](http://localhost:8080)
 
-### 切换端口号
+#### 切换端口号
+```ymal
+aurora:
+    server:
+        port: 8081
+```
 
-### 开启TLS
-
+#### 开启TLS
+```ymal
+aurora:
+  server:
+    tls:
+     certFile: path
+     keyFile: path
+```
 ## Get 请求
 
 ### 自动解析请求参数
