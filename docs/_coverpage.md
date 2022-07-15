@@ -1,5 +1,5 @@
 
-# Aurora<small>v0.5.0.1</small>
+# Aurora<small>v0.5.0.2</small>
 
 - 简单-优雅-灵活
 - 动态路由
