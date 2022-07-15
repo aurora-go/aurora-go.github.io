@@ -25,14 +25,14 @@ func main() {
 ```
 [访问 localhost:8080](http://localhost:8080)
 
-#### 切换端口号
+##### 切换端口号
 ```ymal
 aurora:
     server:
         port: 8081
 ```
 
-#### 开启TLS
+##### 开启TLS
 ```ymal
 aurora:
   server:
@@ -53,7 +53,7 @@ a.Get("/get", func(age int, name string) {
 ```
 [http://localhost:8080/get?age=20&name=saber](http://localhost:8080/get?age=20&name=saber)
 
-### map解析
+### `map` 解析
 通过map可以 k/v 形式的参数，使用map解析请求需要注意的一点，如上述的参数类型存在多种则只能通过 `map[string]interface{}` 或者 `map[string]string` 这样的形式来处理否则参数解析将失败。
 ```go
 // GET http://localhost:8080/get?age=20&name=saber
@@ -115,7 +115,7 @@ a.Post("/post3", func(post map[string]interface{}) {
     fmt.Println(post)
 })
 ```
-!> <b style="color=red;">注意</b> : 在处理器的函数参为结构体或结构体指针解析请求，必须使用可导出的字段，否则无法解析参数。
+!> <b style="color=red;">注意</b> : 在处理器的函数参为结构体或结构体指针解析请求，必须使用可导出的字段，否则无法解析参数 , `map[string]string` 在Get中适用而在Post中并不适用于复杂结构体 。
 
 ## 结构体处理器
 &emsp;&emsp;结构体处理器，是对需要使用结构体中的函数注册为处理器的一个便捷提供方式，普通注册方式虽然也可以做到使用结构体绑定的函数作为处理器，其写法相对繁琐。提供结构体处理器解析注册的同时也存在一些不便利的
@@ -155,7 +155,7 @@ func main(){
 其类型都是Get请求，需要转换为其他类型的请求修改开头的驼峰前缀即可比如， `PostUpdate()` 。
 
 ## 使用中间件
-中间件是一个固定的函数签名，日后也许会有所调整
+中间件是一个固定的函数签名，日后也许会有所调整，函数通过返回一个 `bool` 来判断是否执行下一个中间件。
 ```go
 type Middleware func(Ctx) bool
 ```
@@ -195,6 +195,9 @@ a.Get("/", func() {}, Before())
 ```go
 a.Url("/", &TestServer{}, Before())
 ```
+
+### 中间件处理中断
+某个中间件如果逻辑处理失败，我们需要正常的对客户端做出响应，通过 `aurora.Ctx` 的 `func (c Ctx) Return(value ...interface{})` 来完成。
 
 ## 路由分组
 ```go
@@ -435,3 +438,54 @@ func main() {
 ```
 
 > 错误捕捉只适用于自定义的错误类型，否则返回错误将只作为简单的内容输出，错误处理器的返回值处理方式和接口处理器处理一致
+
+## 系统变量
+系统变量是 `aurora` 服务器中提供的便捷机制，同时系统变量也提供到了用户级别注册，在 `aurora` 中有几个默认的系统变量，为以下几个。
+
+|类型|参数功能|是否系统自带|
+|:-|:-|:-|
+|*http.Request|原生http请求体|是|
+|http.ResponseWritre|原生http响应体|是|
+|aurora.Ctx|aurora中间件上下文参数|是|
+|*aurora.MultipartFile|Post请求解析文件参数|是|
+
+#### 使用
+系统变量的使用方式，在处理器的函数参数列表的任意位置使用即可，参数的类型要严格匹配
+```go
+a.Get("/", func(req *http.Request) {
+		
+})
+a.Get("/", func(rew http.ResponseWritre) {
+		
+})
+
+a.Get("/", func(ctx aurora.Ctx) {
+		
+})
+
+a.Post("/", func(file *aurora.MultipartFile) {
+		
+})
+
+```
+
+#### 自定义系统变量
+`aurora` 提供自定义系统变量注册(v0.5.0.2 发布测试版本)，参数列表中的自定义类型需要严格匹配。
+```go
+type Ccc struct {
+	Name string
+}
+func TestAurora(t *testing.T) {
+	a := aurora.NewAurora()
+	/// 注册一个系统变量，类型为 *Ccc
+	a.SysVariable(&Ccc{}, func(proxy *aurora.Proxy) interface{} {
+	    // 更具使用情况 对变量进行初始化并且返回
+		c := &Ccc{"test"}
+		return c
+	})
+	// 执行处理 ccc 是通过自定义的方式初始化好的
+	a.Get("/", func(ccc *Ccc, req *http.Request) {
+		fmt.Println(ccc)
+	})
+	aurora.Run(a)
+} 
