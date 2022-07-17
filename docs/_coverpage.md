@@ -6,6 +6,6 @@
 - 全栈开发
 
 [开始](home.md)
-[GitHub](https://github.com/aurora-go/aurora)
+[Gitee](https://gitee.com/aurora-engine/aurora)
 
 ![](#f0f0f0)

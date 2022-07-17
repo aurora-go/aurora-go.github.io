@@ -10,7 +10,7 @@ go 1.16+
 ```go
 package main
 
-import "github.com/aurora-go/aurora"
+import "gitee.com/aurora-engine/aurora"
 
 func main() {
     //创建 实例
@@ -166,7 +166,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/aurora-go/aurora"
+	"gitee.com/aurora-engine/aurora"
 )
 
 func Before() aurora.Middleware {
@@ -310,7 +310,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/aurora-go/aurora"
+	"gitee.com/aurora-engine/aurora"
 )
 
 type Aaa struct {
@@ -370,7 +370,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/aurora-go/aurora"
+	"gitee.com/aurora-engine/aurora"
 )
 
 type Aaa struct {
@@ -412,7 +412,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/aurora-go/aurora"
+	"gitee.com/aurora-engine/aurora"
 )
 
 type MyError struct {
