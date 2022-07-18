@@ -33,3 +33,6 @@ func TestAurora(t *testing.T) {
 
 ### bug 修复
 - 系统变量， `*http.Request` , `http.ResponseWritre` , `aurora.Ctx` , `*aurora.MultipartFile` 初始化为空 
+
+## 2022-7-18 (tag v1.0.3)
+添加系统参数的类型校验检查，修复 错误捕捉的类型判断
