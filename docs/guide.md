@@ -26,14 +26,14 @@ func main() {
 [访问 localhost:8080](http://localhost:8080)
 
 ##### 切换端口号
-```ymal
+```yml
 aurora:
     server:
         port: 8081
 ```
 
 ##### 开启TLS
-```ymal
+```yml
 aurora:
   server:
     tls:
